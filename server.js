@@ -16,22 +16,33 @@ app.use(express.static('public'));
 // === ENDPOINT: GET /ankieta ===
 app.get('/ankieta', (req, res) => {
   const ankieta = {
-    title: "Ankieta o stronie",
+    title: "Krótka ankieta",
     questions: [
       {
-        id: "ocena",
-        text: "Jak oceniasz naszą stronę?",
-        type: "scale"
+        id: "A",
+        text: "Jak oceniasz naszą usługę?",
+        type: "yesno",
+        options: ["1", "2"],
+        next: {
+          "1": "B",
+          "2": "C"
+        }
       },
       {
-        id: "polecenie",
-        text: "Czy poleciłbyś nas znajomym?",
-        type: "yesno"
+        id: "B",
+        text: "Dlaczego wybrałeś odpowiedź 1?",
+        type: "text"
+      },
+      {
+        id: "C",
+        text: "Dlaczego wybrałeś odpowiedź 2?",
+        type: "text"
       }
     ]
   };
   res.json(ankieta);
 });
+
 
 // === ENDPOINT: POST /odpowiedzi ===
 app.post('/odpowiedzi', (req, res) => {
