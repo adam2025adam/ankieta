@@ -1,6 +1,12 @@
 (async function () {
   const API_URL = 'https://ankieta-u691.onrender.com'; // Twoje publiczne API
 
+  const style = document.createElement('link');
+style.rel = 'stylesheet';
+style.href = 'https://ankieta-u691.onrender.com/widget.css';
+document.head.appendChild(style);
+
+  
   const res = await fetch(`${API_URL}/ankieta`);
   const ankieta = await res.json();
 
@@ -22,58 +28,55 @@
   let currentQuestionId = ankieta.questions[0].id;
 
   function showQuestion(questionId) {
-    const question = ankieta.questions.find(q => q.id === questionId);
-    if (!question) return;
+    container.className = 'survey-widget';
+container.innerHTML = ''; // czyść wszystko
 
-    container.innerHTML = ''; // wyczyść
+const title = document.createElement('div');
+title.className = 'survey-question-title';
+title.innerText = question.text;
+container.appendChild(title);
 
-    const questionText = document.createElement('div');
-    questionText.innerText = question.text;
-    questionText.style.marginBottom = '12px';
-    questionText.style.fontWeight = 'bold';
-    container.appendChild(questionText);
+// jeśli chcesz podtytuły – np. sztywno dodamy dla yesno i text
+if (question.type === 'yesno' || question.type === 'text') {
+  const subtitle = document.createElement('div');
+  subtitle.className = 'survey-question-subtitle';
+  subtitle.innerText = 'Wybierz jedną z odpowiedzi:';
+  if (question.type === 'text') subtitle.innerText = 'Wpisz swoją odpowiedź:';
+  container.appendChild(subtitle);
+}
 
-    if (question.type === 'yesno') {
-      question.options.forEach(opt => {
-        const btn = document.createElement('button');
-        btn.innerText = opt;
-        btn.style.marginRight = '10px';
-        btn.style.marginBottom = '10px';
-        btn.onclick = () => handleAnswer(question.id, opt, question.next?.[opt]);
-        container.appendChild(btn);
-      });
+if (question.type === 'yesno') {
+  const optionsWrapper = document.createElement('div');
+  optionsWrapper.className = 'survey-answer-options';
+
+  question.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.innerText = opt;
+    btn.onclick = () => handleAnswer(question.id, opt, question.next?.[opt]);
+    optionsWrapper.appendChild(btn);
+  });
+
+  container.appendChild(optionsWrapper);
+}
+
+if (question.type === 'text') {
+  const inputWrapper = document.createElement('div');
+  inputWrapper.className = 'survey-answer-input';
+
+  const textarea = document.createElement('textarea');
+  textarea.placeholder = 'Wpisz tutaj...';
+
+  const btn = document.createElement('button');
+  btn.innerText = 'Dalej';
+  btn.onclick = () => handleAnswer(question.id, textarea.value);
+
+  inputWrapper.appendChild(textarea);
+  inputWrapper.appendChild(btn);
+  container.appendChild(inputWrapper);
+}
+
     }
-
-    if (question.type === 'scale') {
-      const select = document.createElement('select');
-      select.name = question.id;
-      for (let i = 1; i <= 5; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.innerText = i;
-        select.appendChild(option);
-      }
-      const nextBtn = document.createElement('button');
-      nextBtn.innerText = 'Dalej';
-      nextBtn.style.marginTop = '10px';
-      nextBtn.onclick = () => handleAnswer(question.id, select.value, question.next?.[select.value]);
-      container.appendChild(select);
-      container.appendChild(nextBtn);
-    }
-
-    if (question.type === 'text') {
-      const input = document.createElement('textarea');
-      input.style.width = '100%';
-      input.style.height = '60px';
-      input.style.marginBottom = '10px';
-
-      const nextBtn = document.createElement('button');
-      nextBtn.innerText = 'Dalej';
-      nextBtn.onclick = () => handleAnswer(question.id, input.value);
-      container.appendChild(input);
-      container.appendChild(nextBtn);
-    }
-  }
+  
 
   async function handleAnswer(questionId, value, nextId = null) {
     answers[questionId] = value;

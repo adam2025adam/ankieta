@@ -1,0 +1,73 @@
+.survey-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 320px;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    font-size: 14px;
+    color: #333;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .survey-question-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  
+  .survey-question-subtitle {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 12px;
+  }
+  
+  .survey-answer-options button {
+    display: inline-block;
+    margin: 5px 5px 0 0;
+    padding: 8px 14px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .survey-answer-options button:hover {
+    background-color: #0056b3;
+  }
+  
+  .survey-answer-input textarea {
+    width: 100%;
+    min-height: 60px;
+    padding: 8px;
+    font-family: inherit;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    resize: vertical;
+  }
+  
+  .survey-answer-input button {
+    padding: 8px 14px;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .survey-answer-input button:hover {
+    background-color: #1e7e34;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  
