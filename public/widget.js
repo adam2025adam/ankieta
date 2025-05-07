@@ -1,5 +1,6 @@
 (async function () {
-    const API_URL = 'http://localhost:3000'; // Zmień na swoją domenę w produkcji
+    const API_URL = 'https://ankieta-u691.onrender.com';
+
   
     // Pobierz pytania
     const res = await fetch(`${API_URL}/ankieta`);
