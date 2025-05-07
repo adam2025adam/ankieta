@@ -71,15 +71,11 @@ app.get('/wyniki', (req, res) => {
   const content = fs.readFileSync(filePath, 'utf-8');
   const odpowiedzi = JSON.parse(content);
 
-  let html = `<h2>Zebrane odpowiedzi (${odpowiedzi.length})</h2><table border="1" cellpadding="5"><thead><tr>`;
-  const keys = Object.keys(odpowiedzi[0]);
-  keys.forEach(k => html += `<th>${k}</th>`);
-  html += `</tr></thead><tbody>`;
+  let html = `<h2>Zebrane odpowiedzi (${odpowiedzi.length})</h2><table border="1" cellpadding="5"><thead><tr>
+    <th>questionId</th><th>value</th><th>timestamp</th></tr></thead><tbody>`;
 
   odpowiedzi.forEach(row => {
-    html += `<tr>`;
-    keys.forEach(k => html += `<td>${row[k]}</td>`);
-    html += `</tr>`;
+    html += `<tr><td>${row.questionId}</td><td>${row.value}</td><td>${row.timestamp}</td></tr>`;
   });
 
   html += `</tbody></table>`;
