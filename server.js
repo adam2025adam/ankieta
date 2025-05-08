@@ -9,6 +9,20 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const questionLabels = {
+  A: "Czy widziałeś, że możesz udostępnić w eCRUB swoje dane kontaktowe?",
+  B: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (TAK)?",
+  C: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (NIE)?",
+  D: "Co powoduje, że chcesz udostępnić w eCRUB swoje dane kontaktowe?",
+  E: "Dlaczego nie chcesz udostępniać danych?",
+  F: "Napisz dlaczego",
+  G: "Czy jest coś, co chciałbyś/chciałabyś dodać?",
+  H: "Pytanie H",
+  I: "Pytanie I",
+  J: "Pytanie J"
+};
+
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
@@ -176,8 +190,11 @@ app.get('/wyniki', async (req, res) => {
     const headers = Object.keys(rows[0]);
 
     headers.forEach(h => {
-      html += `<th>${h}</th>`;
+      const label = questionLabels[h.toUpperCase()] || h;
+      html += `<th>${label}</th>`;
     });
+    
+
     html += `</tr></thead><tbody>`;
 
     rows.forEach(row => {
