@@ -1,12 +1,17 @@
 (async function () {
   const API_URL = 'https://ankieta-u691.onrender.com';
 
-  // załaduj CSS
+  // Załaduj CSS
   const style = document.createElement('link');
   style.rel = 'stylesheet';
-  style.href = 'https://ankieta-u691.onrender.com/widget.css';
+  style.href = `${API_URL}/widget.css`;
   document.head.appendChild(style);
 
+  // Utwórz nowego użytkownika i pobierz jego ID
+  const startRes = await fetch(`${API_URL}/start`, { method: 'POST' });
+  const { userId } = await startRes.json();
+
+  // Pobierz ankietę
   const res = await fetch(`${API_URL}/ankieta`);
   const ankieta = await res.json();
 
@@ -14,14 +19,13 @@
   container.className = 'survey-widget';
   document.body.appendChild(container);
 
-  const answers = {};
   let currentQuestionId = ankieta.questions[0].id;
 
   function showQuestion(questionId) {
     const question = ankieta.questions.find(q => q.id === questionId);
     if (!question) return;
 
-    container.innerHTML = ''; // czyść
+    container.innerHTML = '';
 
     const title = document.createElement('div');
     title.className = 'survey-question-title';
@@ -31,9 +35,10 @@
     if (question.type === 'yesno' || question.type === 'text') {
       const subtitle = document.createElement('div');
       subtitle.className = 'survey-question-subtitle';
-      subtitle.innerText = question.type === 'text'
-        ? 'Wpisz swoją odpowiedź:'
-        : 'Wybierz jedną z opcji:';
+      subtitle.innerText =
+        question.type === 'text'
+          ? 'Wpisz swoją odpowiedź:'
+          : 'Wybierz jedną z opcji:';
       container.appendChild(subtitle);
     }
 
@@ -69,18 +74,17 @@
   }
 
   async function handleAnswer(questionId, value, nextId = null) {
-    answers[questionId] = value;
-
-    await fetch(`${API_URL}/odpowiedzi`, {
+    await fetch(`${API_URL}/odpowiedz`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ questionId, value }),
+      body: JSON.stringify({ userId, questionId, value }),
     });
 
     if (nextId) {
       showQuestion(nextId);
     } else {
-      container.innerHTML = '<p style="color: green; font-weight: bold;">Dziękujemy za wypełnienie ankiety!</p>';
+      container.innerHTML =
+        '<p style="color: green; font-weight: bold;">Dziękujemy za wypełnienie ankiety!</p>';
     }
   }
 
