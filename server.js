@@ -44,35 +44,84 @@ app.post('/start', async (req, res) => {
   res.json({ userId });
 });
 
-// === ENDPOINT: GET /ankieta ===
 app.get('/ankieta', (req, res) => {
   const ankieta = {
-    title: "Krótka ankieta",
+    title: "Ankieta o udostępnianiu danych w eCRUB",
     questions: [
       {
         id: "A",
-        text: "Jak oceniasz naszą usługę?",
+        text: "Czy widziałeś, że możesz udostępnić w eCRUB swoje dane kontaktowe?",
         type: "yesno",
-        options: ["1", "2"],
+        options: ["tak", "nie"],
         next: {
-          "1": "B",
-          "2": "C"
+          "tak": "B",
+          "nie": "C"
         }
       },
       {
         id: "B",
-        text: "Dlaczego wybrałeś odpowiedź 1?",
-        type: "text"
+        text: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (TAK)?",
+        type: "options",
+        options: ["tak", "już udostępniłem", "nie"],
+        next: {
+          "tak": "D",
+          "już udostępniłem": "D",
+          "nie": "E"
+        }
       },
       {
         id: "C",
-        text: "Dlaczego wybrałeś odpowiedź 2?",
+        text: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (NIE)?",
+        type: "yesno",
+        options: ["tak", "nie"],
+        next: {
+          "tak": "D",
+          "nie": "E"
+        }
+      },
+      {
+        id: "D",
+        text: "Co powoduje, że chcesz udostępnić w eCRUB swoje dane kontaktowe?",
+        type: "options",
+        options: [
+          "widzę potencjalną korzyść",
+          "korzystam w eCRUB z danych kontaktowych innych",
+          "inne"
+        ],
+        next: {
+          "inne": "G"
+        }
+      },
+      {
+        id: "E",
+        text: "Dlaczego nie chcesz udostępniać danych?",
+        type: "options",
+        options: [
+          "nie uważam, żeby to było dla mnie korzystne",
+          "nie rozumiem w jakim celu",
+          "obawiam się o moją prywatność",
+          "inne"
+        ],
+        next: {
+          "inne": "F"
+        }
+      },
+      {
+        id: "F",
+        text: "Napisz dlaczego",
+        type: "text"
+      },
+      {
+        id: "G",
+        text: "Czy jest coś, co chciałbyś/chciałabyś dodać?",
         type: "text"
       }
     ]
   };
+
   res.json(ankieta);
 });
+
 
 app.post('/odpowiedz', async (req, res) => {
   const { userId, questionId, value } = req.body;
