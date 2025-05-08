@@ -1,13 +1,22 @@
 (async function () {
   const API_URL = 'https://ankieta-u691.onrender.com';
 
+  // 🔒 Sprawdź datę ostatniej odpowiedzi
+  const lastShown = localStorage.getItem('surveyLastSeen');
+  if (lastShown) {
+    const last = new Date(lastShown);
+    const now = new Date();
+    const daysSince = (now - last) / (1000 * 60 * 60 * 24);
+    if (daysSince < 30) {
+      return; // Nie pokazuj ankiety
+    }
+  }
+
   // Wczytaj styl CSS
   const style = document.createElement('link');
   style.rel = 'stylesheet';
   style.href = `${API_URL}/widget.css`;
   document.head.appendChild(style);
-
-  
 
   // Pobierz ankietę
   const res = await fetch(`${API_URL}/ankieta`);
@@ -18,21 +27,20 @@
   document.body.appendChild(container);
 
   const closeBtn = document.createElement('div');
-closeBtn.innerHTML = '&times;';
-closeBtn.className = 'survey-close-btn';
-closeBtn.onclick = () => container.remove();
-container.appendChild(closeBtn);
-
+  closeBtn.innerHTML = '&times;';
+  closeBtn.className = 'survey-close-btn';
+  closeBtn.onclick = () => container.remove();
+  container.appendChild(closeBtn);
 
   let currentQuestionId = questions[0].id;
-  const answers = {};
+  let userId = null;
 
   function showQuestion(questionId) {
     const question = questions.find(q => q.id === questionId);
     if (!question) return;
 
     container.innerHTML = '';
-    container.appendChild(closeBtn); // <-- DODAJ TO
+    container.appendChild(closeBtn);
 
     const titleEl = document.createElement('div');
     titleEl.className = 'survey-question-title';
@@ -82,26 +90,31 @@ container.appendChild(closeBtn);
       container.appendChild(wrapper);
     }
   }
-let userId = null;
 
   async function handleAnswer(questionId, value, nextId = null) {
     const payload = { questionId, value };
     if (userId) {
       payload.userId = userId;
     }
-    
+
     const response = await fetch(`${API_URL}/odpowiedz`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-  
+
     const result = await response.json();
-  
+
     if (!userId && result.userId) {
-      userId = result.userId; // zapamiętaj nowe ID
+      userId = result.userId;
+      // 📅 Zapisz datę ostatniego wypełnienia
+      localStorage.setItem('surveyLastSeen', new Date().toISOString());
     }
-  
+
+    if (userId && !localStorage.getItem('surveyLastSeen')) {
+      localStorage.setItem('surveyLastSeen', new Date().toISOString());
+    }
+
     if (nextId) {
       showQuestion(nextId);
     } else {
@@ -109,8 +122,6 @@ let userId = null;
       container.appendChild(closeBtn);
     }
   }
-  
-  
 
   showQuestion(currentQuestionId);
 })();
