@@ -3,15 +3,46 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
+const { Pool } = require('pg');
+require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000; // <-- TO MUSI BYĆ TAK
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static('public'));
+
+// === PostgreSQL połączenie ===
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
+
+// === Tworzenie tabeli przy starcie ===
+const initDB = async () => {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS odpowiedzi (
+      id SERIAL PRIMARY KEY,
+      A TEXT, B TEXT, C TEXT, D TEXT, E TEXT,
+      F TEXT, G TEXT, H TEXT, I TEXT, J TEXT
+    )
+  `);
+};
+initDB();
+
 
 // Udostępnij pliki statyczne z katalogu "public"
 app.use(express.static('public'));
+
+
+app.post('/start', async (req, res) => {
+  const result = await pool.query('INSERT INTO odpowiedzi DEFAULT VALUES RETURNING id');
+  const userId = result.rows[0].id;
+  res.json({ userId });
+});
 
 // === ENDPOINT: GET /ankieta ===
 app.get('/ankieta', (req, res) => {
@@ -43,43 +74,19 @@ app.get('/ankieta', (req, res) => {
   res.json(ankieta);
 });
 
-
-// === ENDPOINT: POST /odpowiedzi ===
-app.post('/odpowiedzi', (req, res) => {
-  const odpowiedz = req.body;
-  const filePath = path.join(__dirname, 'odpowiedzi.json');
-
-  let odpowiedzi = [];
-  if (fs.existsSync(filePath)) {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    odpowiedzi = JSON.parse(content);
+app.post('/odpowiedz', async (req, res) => {
+  const { userId, questionId, value } = req.body;
+  if (!userId || !questionId || !value) {
+    return res.status(400).json({ error: 'Brakuje userId, questionId lub value' });
   }
 
-  odpowiedzi.push({ ...odpowiedz, timestamp: new Date().toISOString() });
-  fs.writeFileSync(filePath, JSON.stringify(odpowiedzi, null, 2));
+  const query = {
+    text: `UPDATE odpowiedzi SET "${questionId}" = $1 WHERE id = $2`,
+    values: [value, userId],
+  };
 
+  await pool.query(query);
   res.json({ success: true });
-});
-
-// === ENDPOINT: GET /wyniki ===
-app.get('/wyniki', (req, res) => {
-  const filePath = path.join(__dirname, 'odpowiedzi.json');
-  if (!fs.existsSync(filePath)) {
-    return res.send('<h2>Brak odpowiedzi</h2>');
-  }
-
-  const content = fs.readFileSync(filePath, 'utf-8');
-  const odpowiedzi = JSON.parse(content);
-
-  let html = `<h2>Zebrane odpowiedzi (${odpowiedzi.length})</h2><table border="1" cellpadding="5"><thead><tr>
-    <th>questionId</th><th>value</th><th>timestamp</th></tr></thead><tbody>`;
-
-  odpowiedzi.forEach(row => {
-    html += `<tr><td>${row.questionId}</td><td>${row.value}</td><td>${row.timestamp}</td></tr>`;
-  });
-
-  html += `</tbody></table>`;
-  res.send(html);
 });
 
 // === Start serwera ===
