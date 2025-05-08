@@ -66,37 +66,47 @@ app.get('/ankieta', (req, res) => {
     questions: [
       {
         id: "A",
-        text: "Czy widziałeś, że możesz udostępnić w eCRUB swoje dane kontaktowe?",
+        text: "Czy posiadasz uprawnienia budowlane?",
         type: "yesno",
         options: ["tak", "nie"],
         next: {
           "tak": "B",
-          "nie": "C"
+          "nie": null // zakończ ankietę
         }
       },
       {
         id: "B",
-        text: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (TAK)?",
-        type: "options",
-        options: ["tak", "już udostępniłem", "nie"],
+        text: "Czy widziałeś, że możesz udostępnić w eCRUB swoje dane kontaktowe?",
+        type: "yesno",
+        options: ["tak", "nie"],
         next: {
-          "tak": "D",
-          "już udostępniłem": "D",
-          "nie": "E"
+          "tak": "C",
+          "nie": "D"
         }
       },
       {
         id: "C",
-        text: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (NIE)?",
-        type: "yesno",
-        options: ["tak", "nie"],
+        text: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (TAK)?",
+        type: "options",
+        options: ["tak", "już udostępniłem", "nie"],
         next: {
-          "tak": "D",
-          "nie": "E"
+          "tak": "E",
+          "już udostępniłem": "E",
+          "nie": "F"
         }
       },
       {
         id: "D",
+        text: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (NIE)?",
+        type: "yesno",
+        options: ["tak", "nie"],
+        next: {
+          "tak": "E",
+          "nie": "F"
+        }
+      },
+      {
+        id: "E",
         text: "Co powoduje, że chcesz udostępnić w eCRUB swoje dane kontaktowe?",
         type: "options",
         options: [
@@ -105,11 +115,13 @@ app.get('/ankieta', (req, res) => {
           "inne"
         ],
         next: {
-          "inne": "G"
+          "widzę potencjalną korzyść": "H",
+          "korzystam w eCRUB z danych kontaktowych innych": "H",
+          "inne": "H"
         }
       },
       {
-        id: "E",
+        id: "F",
         text: "Dlaczego nie chcesz udostępniać danych?",
         type: "options",
         options: [
@@ -119,16 +131,20 @@ app.get('/ankieta', (req, res) => {
           "inne"
         ],
         next: {
-          "inne": "F"
+          "nie uważam, żeby to było dla mnie korzystne": "G",
+          "nie rozumiem w jakim celu": "G",
+          "obawiam się o moją prywatność": "G",
+          "inne": "G"
         }
       },
       {
-        id: "F",
+        id: "G",
         text: "Napisz dlaczego",
-        type: "text"
+        type: "text",
+        next: "H"
       },
       {
-        id: "G",
+        id: "H",
         text: "Czy jest coś, co chciałbyś/chciałabyś dodać?",
         type: "text"
       }
@@ -137,6 +153,7 @@ app.get('/ankieta', (req, res) => {
 
   res.json(ankieta);
 });
+
 
 
 app.post('/odpowiedz', async (req, res) => {
