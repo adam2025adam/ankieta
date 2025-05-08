@@ -36,14 +36,16 @@ const pool = new Pool({
 });
 
 const initDB = async () => {
+  await pool.query(`DROP TABLE IF EXISTS odpowiedzi`);
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS odpowiedzi (
+    CREATE TABLE odpowiedzi (
       id SERIAL PRIMARY KEY,
       "A" TEXT, "B" TEXT, "C" TEXT, "D" TEXT, "E" TEXT,
       "F" TEXT, "G" TEXT, "H" TEXT, "I" TEXT, "J" TEXT
     )
   `);
 };
+
 
 initDB();
 
