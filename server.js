@@ -10,14 +10,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const questionLabels = {
-  A: "Czy widziałeś, że możesz udostępnić w eCRUB swoje dane kontaktowe?",
-  B: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (TAK)?",
-  C: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (NIE)?",
-  D: "Co powoduje, że chcesz udostępnić w eCRUB swoje dane kontaktowe?",
-  E: "Dlaczego nie chcesz udostępniać danych?",
-  F: "Napisz dlaczego",
-  G: "Czy jest coś, co chciałbyś/chciałabyś dodać?",
-  H: "Pytanie H",
+  A: "Czy posiadasz uprawnienia budowlane?",
+  B: "Czy widziałeś, że możesz udostępnić w eCRUB swoje dane kontaktowe?",
+  C: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (TAK)?",
+  D: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (NIE)?",
+  E: "Co powoduje, że chcesz udostępnić w eCRUB swoje dane kontaktowe?",
+  F: "Dlaczego nie chcesz udostępniać danych?",
+  G: "Napisz dlaczego",
+  H: "Czy jest coś, co chciałbyś/chciałabyś dodać?",
   I: "Pytanie I",
   J: "Pytanie J"
 };
