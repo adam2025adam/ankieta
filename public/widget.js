@@ -7,9 +7,7 @@
   style.href = `${API_URL}/widget.css`;
   document.head.appendChild(style);
 
-  // Pobierz ID użytkownika
-  const startRes = await fetch(`${API_URL}/start`, { method: 'POST' });
-  const { userId } = await startRes.json();
+  
 
   // Pobierz ankietę
   const res = await fetch(`${API_URL}/ankieta`);
@@ -34,6 +32,7 @@ container.appendChild(closeBtn);
     if (!question) return;
 
     container.innerHTML = '';
+    container.appendChild(closeBtn); // <-- DODAJ TO
 
     const titleEl = document.createElement('div');
     titleEl.className = 'survey-question-title';
@@ -83,13 +82,14 @@ container.appendChild(closeBtn);
       container.appendChild(wrapper);
     }
   }
+let userId = null;
 
   async function handleAnswer(questionId, value, nextId = null) {
     const payload = { questionId, value };
     if (userId) {
       payload.userId = userId;
     }
-    let userId = null;
+    
     const response = await fetch(`${API_URL}/odpowiedz`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
