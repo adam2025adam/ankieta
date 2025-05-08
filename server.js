@@ -125,18 +125,40 @@ app.get('/ankieta', (req, res) => {
 
 app.post('/odpowiedz', async (req, res) => {
   const { userId, questionId, value } = req.body;
-  if (!userId || !questionId || !value) {
+
+  console.log('[ODPOWIEDŹ]', { userId, questionId, value });
+
+  // Walidacja danych
+  if (!userId || !questionId || typeof value === 'undefined') {
+    console.warn('❌ BŁĄD: Brakuje userId, questionId lub value');
     return res.status(400).json({ error: 'Brakuje userId, questionId lub value' });
   }
 
-  const query = {
-    text: `UPDATE odpowiedzi SET "${questionId}" = $1 WHERE id = $2`,
-    values: [value, userId],
-  };
+  // Czy questionId pasuje do kolumny w bazie (A-J)?
+  const allowedColumns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+  if (!allowedColumns.includes(questionId)) {
+    console.warn(`❌ BŁĘDNA KOLUMNA: ${questionId}`);
+    return res.status(400).json({ error: 'Nieprawidłowy questionId' });
+  }
 
-  await pool.query(query);
-  res.json({ success: true });
+  try {
+    const query = {
+      text: `UPDATE odpowiedzi SET "${questionId}" = $1 WHERE id = $2`,
+      values: [value, userId],
+    };
+
+    const result = await pool.query(query);
+    if (result.rowCount === 0) {
+      console.warn(`⚠️ Nie znaleziono rekordu o id = ${userId}`);
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('❌ Błąd zapisu do bazy:', err);
+    res.status(500).json({ error: 'Błąd zapisu' });
+  }
 });
+
 
 app.get('/wyniki', async (req, res) => {
   try {
