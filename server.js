@@ -138,7 +138,7 @@ const value = req.body.value;
   }
 
   // Czy questionId pasuje do kolumny w bazie (A-J)?
-  const allowedColumns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+  const allowedColumns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
   if (!allowedColumns.includes(questionId)) {
     console.warn(`❌ BŁĘDNA KOLUMNA: ${questionId}`);
     return res.status(400).json({ error: 'Nieprawidłowy questionId' });
