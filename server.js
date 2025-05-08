@@ -138,34 +138,41 @@ app.get('/ankieta', (req, res) => {
 
 
 app.post('/odpowiedz', async (req, res) => {
-  const userId = req.body.userId;
-const questionId = req.body.questionId?.toLowerCase();
-const value = req.body.value;
-  
+  let { userId, questionId, value } = req.body;
 
   console.log('[ODPOWIEDŹ]', { userId, questionId, value });
 
   // Walidacja danych
-  if (!userId || !questionId || typeof value === 'undefined') {
-    console.warn('❌ BŁĄD: Brakuje userId, questionId lub value');
-    return res.status(400).json({ error: 'Brakuje userId, questionId lub value' });
+  if (!questionId || typeof value === 'undefined') {
+    console.warn('❌ BŁĄD: Brakuje questionId lub value');
+    return res.status(400).json({ error: 'Brakuje questionId lub value' });
   }
 
-  // Czy questionId pasuje do kolumny w bazie (A-J)?
-  const allowedColumns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
+  // Kolumny dozwolone: A-J
+  const allowedColumns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
   if (!allowedColumns.includes(questionId)) {
     console.warn(`❌ BŁĘDNA KOLUMNA: ${questionId}`);
     return res.status(400).json({ error: 'Nieprawidłowy questionId' });
   }
 
   try {
-    const query = {
-      text: `UPDATE odpowiedzi SET "${questionId}" = $1 WHERE id = $2`,
-      values: [value, userId],
-    };
+    if (!userId) {
+      // brak userId → tworzymy nowy wiersz i zapisujemy pierwszą odpowiedź
+      const result = await pool.query(`
+        INSERT INTO odpowiedzi("${questionId}") VALUES ($1) RETURNING id
+      `, [value]);
 
-    const result = await pool.query(query);
-    if (result.rowCount === 0) {
+      const newId = result.rows[0].id;
+      return res.json({ success: true, userId: newId });
+    }
+
+    // userId istnieje → aktualizujemy istniejący wiersz
+    const updateResult = await pool.query(
+      `UPDATE odpowiedzi SET "${questionId}" = $1 WHERE id = $2`,
+      [value, userId]
+    );
+
+    if (updateResult.rowCount === 0) {
       console.warn(`⚠️ Nie znaleziono rekordu o id = ${userId}`);
     }
 
@@ -175,6 +182,7 @@ const value = req.body.value;
     res.status(500).json({ error: 'Błąd zapisu' });
   }
 });
+
 
 
 app.get('/wyniki', async (req, res) => {

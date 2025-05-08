@@ -65,6 +65,16 @@
   .survey-answer-input button:hover {
     background-color: #1e7e34;
   }
+  .survey-close-btn {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #888;
+  }
+  
   
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }

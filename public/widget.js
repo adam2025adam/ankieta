@@ -19,6 +19,13 @@
   container.className = 'survey-widget';
   document.body.appendChild(container);
 
+  const closeBtn = document.createElement('div');
+closeBtn.innerHTML = '&times;';
+closeBtn.className = 'survey-close-btn';
+closeBtn.onclick = () => container.remove();
+container.appendChild(closeBtn);
+
+
   let currentQuestionId = questions[0].id;
   const answers = {};
 
@@ -78,20 +85,31 @@
   }
 
   async function handleAnswer(questionId, value, nextId = null) {
-    answers[questionId] = value;
-
-    await fetch(`${API_URL}/odpowiedz`, {
+    const payload = { questionId, value };
+    if (userId) {
+      payload.userId = userId;
+    }
+    let userId = null;
+    const response = await fetch(`${API_URL}/odpowiedz`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, questionId, value }),
+      body: JSON.stringify(payload)
     });
-
+  
+    const result = await response.json();
+  
+    if (!userId && result.userId) {
+      userId = result.userId; // zapamiętaj nowe ID
+    }
+  
     if (nextId) {
       showQuestion(nextId);
     } else {
       container.innerHTML = '<p style="color: green; font-weight: bold;">Dziękujemy za wypełnienie ankiety!</p>';
     }
   }
+  
+  
 
   showQuestion(currentQuestionId);
 })();
