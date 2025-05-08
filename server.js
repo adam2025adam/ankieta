@@ -124,7 +124,10 @@ app.get('/ankieta', (req, res) => {
 
 
 app.post('/odpowiedz', async (req, res) => {
-  const { userId, questionId, value } = req.body;
+  const userId = req.body.userId;
+const questionId = req.body.questionId?.toLowerCase();
+const value = req.body.value;
+  
 
   console.log('[ODPOWIEDŹ]', { userId, questionId, value });
 
