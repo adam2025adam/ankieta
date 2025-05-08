@@ -21,16 +21,16 @@ const pool = new Pool({
   },
 });
 
-// === Tworzenie tabeli przy starcie ===
 const initDB = async () => {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS odpowiedzi (
       id SERIAL PRIMARY KEY,
-      A TEXT, B TEXT, C TEXT, D TEXT, E TEXT,
-      F TEXT, G TEXT, H TEXT, I TEXT, J TEXT
+      "A" TEXT, "B" TEXT, "C" TEXT, "D" TEXT, "E" TEXT,
+      "F" TEXT, "G" TEXT, "H" TEXT, "I" TEXT, "J" TEXT
     )
   `);
 };
+
 initDB();
 
 
@@ -190,6 +190,15 @@ app.get('/wyniki', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('<h2>Błąd podczas pobierania wyników</h2>');
+  }
+});
+app.get('/debug', async (req, res) => {
+  try {
+    const result = await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'odpowiedzi'`);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Błąd debugowania:', err);
+    res.status(500).send('Błąd połączenia z bazą lub brak tabeli');
   }
 });
 
