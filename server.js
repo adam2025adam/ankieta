@@ -89,6 +89,40 @@ app.post('/odpowiedz', async (req, res) => {
   res.json({ success: true });
 });
 
+app.get('/wyniki', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM odpowiedzi ORDER BY id DESC');
+    const rows = result.rows;
+
+    if (rows.length === 0) {
+      return res.send('<h2>Brak odpowiedzi w bazie</h2>');
+    }
+
+    let html = `<h2>Zebrane odpowiedzi (${rows.length})</h2><table border="1" cellpadding="5"><thead><tr>`;
+    const headers = Object.keys(rows[0]);
+
+    headers.forEach(h => {
+      html += `<th>${h}</th>`;
+    });
+    html += `</tr></thead><tbody>`;
+
+    rows.forEach(row => {
+      html += `<tr>`;
+      headers.forEach(h => {
+        html += `<td>${row[h] ?? ''}</td>`;
+      });
+      html += `</tr>`;
+    });
+
+    html += `</tbody></table>`;
+    res.send(html);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('<h2>Błąd podczas pobierania wyników</h2>');
+  }
+});
+
+
 // === Start serwera ===
 app.listen(PORT, () => {
   console.log(`Serwer działa na porcie ${PORT}`);
