@@ -106,6 +106,7 @@ let userId = null;
       showQuestion(nextId);
     } else {
       container.innerHTML = '<p style="color: green; font-weight: bold;">Dziękujemy za wypełnienie ankiety!</p>';
+      container.appendChild(closeBtn);
     }
   }
   
