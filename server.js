@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const questionLabels = {
-  A: "Czy posiadasz uprawnienia budowlane?",
+  A: "Czy posiadasz uprawnienia budowlane dupa?",
   B: "Czy widziałeś, że możesz udostępnić w eCRUB swoje dane kontaktowe?",
   C: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (TAK)?",
   D: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (NIE)?",
@@ -18,7 +18,7 @@ const questionLabels = {
   F: "Dlaczego nie chcesz udostępniać danych?",
   G: "Napisz dlaczego",
   H: "Czy jest coś, co chciałbyś/chciałabyś dodać?",
-  I: "Pytanie I",
+  I: "Pytanie II",
   J: "Pytanie J"
 };
 
