@@ -60,28 +60,28 @@ app.get('/ankieta', (req, res) => {
       },
       {
         id: "B",
-        text: "Czy wiesz, że możesz udostępnić w eCRUB swoje dane kontaktowe?",
+        text: "(1/3) Czy wiesz, że możesz udostępnić w eCRUB swoje dane kontaktowe?",
         type: "yesno",
         options: ["tak", "nie"],
         next: { "tak": "C", "nie": "D" }
       },
       {
         id: "C",
-        text: "Czy chcesz, aby Twoje dane kontaktowe były widoczne w eCRUB?",
+        text: "(2/3) Czy chcesz, aby Twoje dane kontaktowe były widoczne w eCRUB?",
         type: "options",
         options: ["tak", "nie", "nie wiem"],
         next: { "tak": "E", "nie": "F", "nie wiem": "F" }
       },
       {
         id: "D",
-        text: "Czy mimo to, chcesz udostępnić w eCRUB swoje dane kontaktowe?",
+        text: "(2/3) Czy mimo to, chcesz udostępnić w eCRUB swoje dane kontaktowe?",
         type: "yesno",
         options: ["tak", "nie", "nie wiem"],
         next: { "tak": "E", "nie": "F", "nie wiem": "F" }
       },
       {
         id: "E",
-        text: "Co skłoniło Cię do udostępnienia swoich danych kontaktowych w eCRUB?",
+        text: "(3/3) Co skłoniło Cię do udostępnienia swoich danych kontaktowych w eCRUB?",
         type: "options",
         options: [
           "chcę ułatwić kontakt w sprawie mojej działalności",
@@ -98,7 +98,7 @@ app.get('/ankieta', (req, res) => {
       },
       {
         id: "F",
-        text: "Dlaczego nie chcesz udostępniać danych kontaktowych w eCRUB?",
+        text: "(3/3) Dlaczego nie chcesz udostępniać danych kontaktowych w eCRUB?",
         type: "options",
         options: [
           "nie widzę w tym korzyści",
