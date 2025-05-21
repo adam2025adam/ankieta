@@ -53,7 +53,7 @@
     if (["yesno", "options"].includes(question.type)) {
       const subtitle = document.createElement('div');
       subtitle.className = 'survey-question-subtitle';
-      subtitle.innerText = 'Wybierz jedną z opcji:';
+      //subtitle.innerText = 'Wybierz jedną z opcji:';   <<<<<<<<<<<<<<<<  tekst na widgecie - wybierz jedną z opcji
       container.appendChild(subtitle);
     }
 
@@ -120,7 +120,7 @@
     if (nextId) {
       showQuestion(nextId);
     } else {
-      container.innerHTML = '<p style="color: green; font-weight: bold;">Dziękujemy za wypełnienie ankiety!</p>';
+      container.innerHTML = '<p style="color: black; font-weight: bold;">Dziękujemy za wypełnienie ankiety!</p>';
       container.appendChild(closeBtn);
     }
   }

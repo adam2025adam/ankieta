@@ -76,7 +76,7 @@ app.get('/ankieta', (req, res) => {
       },
       {
         id: "B",
-        text: "Czy widziałeś, że możesz udostępnić w eCRUB swoje dane kontaktowe?",
+        text: "Czy wiesz, że możesz udostępnić w eCRUB swoje dane kontaktowe?",
         type: "yesno",
         options: ["tak", "nie"],
         next: {
@@ -86,7 +86,7 @@ app.get('/ankieta', (req, res) => {
       },
       {
         id: "C",
-        text: "Chcesz udostępnić w eCRUB swoje dane kontaktowe?",
+        text: "Czy chcesz, aby Twoje dane kontaktowe były widoczne w eCRUB?",
         type: "options",
         options: ["tak", "nie", "już udostępniłem"],
         next: {
@@ -97,7 +97,7 @@ app.get('/ankieta', (req, res) => {
       },
       {
         id: "D",
-        text: "Chcesz udostępnić w eCRUB swoje dane kontaktowe?",
+        text: "Czy mimo to, chcesz udostępnić w eCRUB swoje dane kontaktowe?",
         type: "yesno",
         options: ["tak", "nie"],
         next: {
@@ -107,16 +107,16 @@ app.get('/ankieta', (req, res) => {
       },
       {
         id: "E",
-        text: "Co powoduje, że chcesz udostępnić w eCRUB swoje dane kontaktowe?",
+        text: "Co skłoniło Cię do udostępnienia swoich danych kontaktowych w eCRUB?",
         type: "options",
         options: [
-          "widzę potencjalną korzyść",
+          "chcę ułatwić kontakt w sprawie mojej działalności",
           "korzystam w eCRUB z danych kontaktowych innych",
           "ciekawi mnie to rozwiązanie",
           "inne"
         ],
         next: {
-          "widzę potencjalną korzyść": "H",
+          "chcę ułatwić kontakt w sprawie mojej działalności": "H",
           "korzystam w eCRUB z danych kontaktowych innych": "H",
           "ciekawi mnie to rozwiązanie": "H",
           "inne": "H"
@@ -124,7 +124,7 @@ app.get('/ankieta', (req, res) => {
       },
       {
         id: "F",
-        text: "Dlaczego nie chcesz udostępniać danych?",
+        text: "Dlaczego nie chcesz udostępniać danych kontaktowych w eCRUB?",
         type: "options",
         options: [
           "nie widzę w tym korzyści",
@@ -141,13 +141,13 @@ app.get('/ankieta', (req, res) => {
       },
       {
         id: "G",
-        text: "Napisz dlaczego",
+        text: "Opisz, co zniechęca Cię do udostępnienia danych",
         type: "text",
         next: "H"
       },
       {
         id: "H",
-        text: "Czy jest coś, co chciałbyś/chciałabyś dodać?",
+        text: "Czy chcesz przekazać nam coś jeszcze?",
         type: "text"
       }
     ]
