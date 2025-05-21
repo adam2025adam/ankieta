@@ -99,10 +99,11 @@ app.get('/ankieta', (req, res) => {
         id: "D",
         text: "Czy mimo to, chcesz udostępnić w eCRUB swoje dane kontaktowe?",
         type: "yesno",
-        options: ["tak", "nie"],
+        options: ["tak", "nie", "nie wiem"],
         next: {
           "tak": "E",
-          "nie": "F"
+          "nie": "F",
+          "nie wiem": "F"
         }
       },
       {
