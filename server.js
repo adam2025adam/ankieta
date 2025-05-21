@@ -117,7 +117,6 @@ app.get('/ankieta', (req, res) => {
         next: {
           "widzę potencjalną korzyść": "H",
           "korzystam w eCRUB z danych kontaktowych innych": "H",
-          "ciekawi mnie ta opcja": "H",
           "inne": "H"
         }
       },
