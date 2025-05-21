@@ -1,8 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const fs = require('fs');
-const path = require('path');
 const { Pool } = require('pg');
 require('dotenv').config();
 
@@ -10,29 +8,25 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const questionLabels = {
-  A: "Czy posiadasz uprawnienia budowlane dupa?",
+  A: "Czy posiadasz uprawnienia budowlane?",
   B: "Czy widziałeś, że możesz udostępnić w eCRUB swoje dane kontaktowe?",
-  C: "Czy chcesz, aby Twoje dane kontaktowe były widoczne w eCRUB? (TAK)?",
-  D: "Czy mimo to, chcesz udostępnić w eCRUB swoje dane kontaktowe? (NIE)?",
+  C: "Czy chcesz, aby Twoje dane kontaktowe były widoczne w eCRUB?",
+  D: "Czy mimo to, chcesz udostępnić w eCRUB swoje dane kontaktowe?",
   E: "Co skłoniło Cię do udostępnienia swoich danych kontaktowych w eCRUB?",
   F: "Dlaczego nie chcesz udostępniać danych kontaktowych w eCRUB?",
   G: "Opisz, co zniechęca Cię do udostępnienia danych",
   H: "Czy chcesz przekazać nam coś jeszcze?",
   I: "Pytanie puste 1",
-  J: "Pytanie puste 2"
+  J: "Data pierwszej odpowiedzi"
 };
-
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// === PostgreSQL połączenie ===
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ssl: { rejectUnauthorized: false },
 });
 
 const initDB = async () => {
@@ -46,18 +40,11 @@ const initDB = async () => {
   `);
 };
 
-
 initDB();
-
-
-// Udostępnij pliki statyczne z katalogu "public"
-app.use(express.static('public'));
-
 
 app.post('/start', async (req, res) => {
   const result = await pool.query('INSERT INTO odpowiedzi DEFAULT VALUES RETURNING id');
-  const userId = result.rows[0].id;
-  res.json({ userId });
+  res.json({ userId: result.rows[0].id });
 });
 
 app.get('/ankieta', (req, res) => {
@@ -69,42 +56,28 @@ app.get('/ankieta', (req, res) => {
         text: "Czy posiadasz uprawnienia budowlane?",
         type: "yesno",
         options: ["tak", "nie"],
-        next: {
-          "tak": "B",
-          "nie": null // zakończ ankietę
-        }
+        next: { "tak": "B", "nie": null }
       },
       {
         id: "B",
         text: "Czy wiesz, że możesz udostępnić w eCRUB swoje dane kontaktowe?",
         type: "yesno",
         options: ["tak", "nie"],
-        next: {
-          "tak": "C",
-          "nie": "D"
-        }
+        next: { "tak": "C", "nie": "D" }
       },
       {
         id: "C",
         text: "Czy chcesz, aby Twoje dane kontaktowe były widoczne w eCRUB?",
         type: "options",
         options: ["tak", "nie", "nie wiem"],
-        next: {
-          "tak": "E",
-          "nie": "F",
-          "nie wiem": "F"
-        }
+        next: { "tak": "E", "nie": "F", "nie wiem": "F" }
       },
       {
         id: "D",
         text: "Czy mimo to, chcesz udostępnić w eCRUB swoje dane kontaktowe?",
         type: "yesno",
         options: ["tak", "nie", "nie wiem"],
-        next: {
-          "tak": "E",
-          "nie": "F",
-          "nie wiem": "F"
-        }
+        next: { "tak": "E", "nie": "F", "nie wiem": "F" }
       },
       {
         id: "E",
@@ -157,46 +130,39 @@ app.get('/ankieta', (req, res) => {
   res.json(ankieta);
 });
 
-
-
 app.post('/odpowiedz', async (req, res) => {
   let { userId, questionId, value } = req.body;
 
   console.log('[ODPOWIEDŹ]', { userId, questionId, value });
 
-  // Walidacja danych
   if (!questionId || typeof value === 'undefined') {
-    console.warn('❌ BŁĄD: Brakuje questionId lub value');
     return res.status(400).json({ error: 'Brakuje questionId lub value' });
   }
 
-  // Kolumny dozwolone: A-J
   const allowedColumns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
   if (!allowedColumns.includes(questionId)) {
-    console.warn(`❌ BŁĘDNA KOLUMNA: ${questionId}`);
     return res.status(400).json({ error: 'Nieprawidłowy questionId' });
   }
 
   try {
     if (!userId) {
-      // brak userId → tworzymy nowy wiersz i zapisujemy pierwszą odpowiedź
+      const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 16); // "YYYY-MM-DD HH:MM"
       const result = await pool.query(`
-        INSERT INTO odpowiedzi("${questionId}") VALUES ($1) RETURNING id
-      `, [value]);
-
-      const newId = result.rows[0].id;
-      return res.json({ success: true, userId: newId });
+        INSERT INTO odpowiedzi("${questionId}", "J") VALUES ($1, $2) RETURNING id
+      `, [value, timestamp]);
+      return res.json({ success: true, userId: result.rows[0].id });
     }
 
-    // userId istnieje → aktualizujemy istniejący wiersz
-    const updateResult = await pool.query(
-      `UPDATE odpowiedzi SET "${questionId}" = $1 WHERE id = $2`,
-      [value, userId]
-    );
+    // Sprawdź, czy J już istnieje
+    const existing = await pool.query(`SELECT "J" FROM odpowiedzi WHERE id = $1`, [userId]);
+    const alreadyHasTimestamp = existing.rows[0]?.J;
 
-    if (updateResult.rowCount === 0) {
-      console.warn(`⚠️ Nie znaleziono rekordu o id = ${userId}`);
+    if (!alreadyHasTimestamp) {
+      const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 16);
+      await pool.query(`UPDATE odpowiedzi SET "J" = $1 WHERE id = $2`, [timestamp, userId]);
     }
+
+    await pool.query(`UPDATE odpowiedzi SET "${questionId}" = $1 WHERE id = $2`, [value, userId]);
 
     res.json({ success: true });
   } catch (err) {
@@ -204,8 +170,6 @@ app.post('/odpowiedz', async (req, res) => {
     res.status(500).json({ error: 'Błąd zapisu' });
   }
 });
-
-
 
 app.get('/wyniki', async (req, res) => {
   try {
@@ -223,7 +187,6 @@ app.get('/wyniki', async (req, res) => {
       const label = questionLabels[h.toUpperCase()] || h;
       html += `<th>${label}</th>`;
     });
-    
 
     html += `</tr></thead><tbody>`;
 
@@ -242,18 +205,18 @@ app.get('/wyniki', async (req, res) => {
     res.status(500).send('<h2>Błąd podczas pobierania wyników</h2>');
   }
 });
+
 app.get('/debug', async (req, res) => {
   try {
-    const result = await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'odpowiedzi'`);
+    const result = await pool.query(`
+      SELECT column_name FROM information_schema.columns WHERE table_name = 'odpowiedzi'
+    `);
     res.json(result.rows);
   } catch (err) {
-    console.error('Błąd debugowania:', err);
     res.status(500).send('Błąd połączenia z bazą lub brak tabeli');
   }
 });
 
-
-// === Start serwera ===
 app.listen(PORT, () => {
   console.log(`Serwer działa na porcie ${PORT}`);
 });
