@@ -12,14 +12,14 @@ const PORT = process.env.PORT || 3000;
 const questionLabels = {
   A: "Czy posiadasz uprawnienia budowlane dupa?",
   B: "Czy widziałeś, że możesz udostępnić w eCRUB swoje dane kontaktowe?",
-  C: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (TAK)?",
-  D: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (NIE)?",
-  E: "Co powoduje, że chcesz udostępnić w eCRUB swoje dane kontaktowe?",
-  F: "Dlaczego nie chcesz udostępniać danych?",
-  G: "Napisz dlaczego",
-  H: "Czy jest coś, co chciałbyś/chciałabyś dodać?",
-  I: "Pytanie II",
-  J: "Pytanie J"
+  C: "Czy chcesz, aby Twoje dane kontaktowe były widoczne w eCRUB? (TAK)?",
+  D: "Czy mimo to, chcesz udostępnić w eCRUB swoje dane kontaktowe? (NIE)?",
+  E: "Co skłoniło Cię do udostępnienia swoich danych kontaktowych w eCRUB?",
+  F: "Dlaczego nie chcesz udostępniać danych kontaktowych w eCRUB?",
+  G: "Opisz, co zniechęca Cię do udostępnienia danych",
+  H: "Czy chcesz przekazać nam coś jeszcze?",
+  I: "Pytanie puste 1",
+  J: "Pytanie puste 2"
 };
 
 

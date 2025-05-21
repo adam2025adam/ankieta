@@ -11,7 +11,7 @@
     }
   }
 
-  const TTL_MS = 20 * 1000; // 20 sekund
+  const TTL_MS = 20 * 1000; // 20 sekund  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< time
   const expiresAt = Date.now() + TTL_MS;
   const markAsSeen = () => localStorage.setItem('surveyLastSeen', expiresAt.toString());
 
