@@ -75,7 +75,7 @@
     if (question.type === 'text') {
       const subtitle = document.createElement('div');
       subtitle.className = 'survey-question-subtitle';
-      subtitle.innerText = 'Wpisz swoją odpowiedź:';
+      //subtitle.innerText = 'Wpisz swoją odpowiedź:';  <<<<<<<<<<<<<<<<<<<< wpisz swoją odpowiedz
       container.appendChild(subtitle);
 
       const wrapper = document.createElement('div');
