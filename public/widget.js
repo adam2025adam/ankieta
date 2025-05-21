@@ -1,11 +1,19 @@
 (async function () {
   const API_URL = 'https://ankieta-u691.onrender.com';
 
-  // 🧠 Sprawdź, czy użytkownik już wypełnił ankietę
-  if (localStorage.getItem('surveyFilled') === 'true') {
-    console.log('Ankieta już wypełniona – nie pokazujemy jej ponownie.');
-    return;
+  // 🔁 Zablokuj ponowne wyświetlenie ankiety przez 20 sekund
+  const stored = localStorage.getItem('surveyLastSeen');
+  if (stored) {
+    const expires = Number(stored);
+    if (Date.now() < expires) {
+      console.log('Ankieta była już wypełniona niedawno – nie pokazujemy ponownie.');
+      return;
+    }
   }
+
+  const TTL_MS = 20 * 1000; // 20 sekund
+  const expiresAt = Date.now() + TTL_MS;
+  const markAsSeen = () => localStorage.setItem('surveyLastSeen', expiresAt.toString());
 
   // Wczytaj styl CSS
   const style = document.createElement('link');
@@ -102,10 +110,12 @@
 
     if (!userId && result.userId) {
       userId = result.userId;
+      markAsSeen();
     }
 
-    // ✅ Ustaw, że użytkownik wypełnił ankietę
-    localStorage.setItem('surveyFilled', 'true');
+    if (userId && !stored) {
+      markAsSeen();
+    }
 
     if (nextId) {
       showQuestion(nextId);

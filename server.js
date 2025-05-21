@@ -86,9 +86,9 @@ app.get('/ankieta', (req, res) => {
       },
       {
         id: "C",
-        text: "Chcesz udostępnić w eCRUB swoje dane kontaktowe?",
+        text: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (TAK)?",
         type: "options",
-        options: ["tak", "nie", "już udostępniłem"],
+        options: ["tak", "już udostępniłem", "nie"],
         next: {
           "tak": "E",
           "już udostępniłem": "E",
@@ -97,7 +97,7 @@ app.get('/ankieta', (req, res) => {
       },
       {
         id: "D",
-        text: "Chcesz udostępnić w eCRUB swoje dane kontaktowe?",
+        text: "Chcesz udostępnić w eCRUB swoje dane kontaktowe (NIE)?",
         type: "yesno",
         options: ["tak", "nie"],
         next: {
@@ -122,16 +122,16 @@ app.get('/ankieta', (req, res) => {
       },
       {
         id: "F",
-        text: "Dlaczego nie chcesz udostępniać danych kontaktowych?",
+        text: "Dlaczego nie chcesz udostępniać danych?",
         type: "options",
         options: [
-          "nie widzę w tym korzyści",
+          "nie uważam, żeby to było dla mnie korzystne",
           "nie rozumiem w jakim celu",
           "obawiam się o moją prywatność",
           "inne"
         ],
         next: {
-          "nie widzę w tym korzyści": "G",
+          "nie uważam, żeby to było dla mnie korzystne": "G",
           "nie rozumiem w jakim celu": "G",
           "obawiam się o moją prywatność": "G",
           "inne": "G"
